@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import { Button } from '@mui/material';
-import { useAuth } from '../hooks/useAuth';
+import { Button, Input } from 'antd';
+import { useAuth } from '../../context/AuthContext';
 
 const Login: React.FC = () => {
-  const [role, setRole] = useState<string | null>(null);
-  const { login, logout, user } = useAuth();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isVolunteer, setIsVolunteer] = useState(false);
+  const { login } = useAuth();
 
-  const handleLogin = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (role === 'admin') {
-      await login('admin');
-    } else if (role === 'volunteer') {
-      await login('volunteer');
+  const handleLogin = async () => {
+    if (isVolunteer) {
+      await login(username, password, 'volunteer');
+    } else {
+      await login(username, password);
     }
   }
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
-        <label htmlFor="role">Ruolo:</label>
-        <select id="role" value={role} onChange={(e) => setRole(e.target.value)} required>
-          <option value="admin">Amministratore</option>
-          <option value="volunteer">Volontario</option>
-        </select>
-        <Button type="submit" variant="contained" color="success">
-          Login
-        </Button>
-      </form>
+    <div style={{ textAlign: 'center' }}>
+      <Input placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} />
+      <br />
+      <Input.Password placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+      <br />
+      <label style={{ marginBottom: '10px' }}>
+        <input type='checkbox' checked={isVolunteer} onChange={() => setIsVolunteer(!isVolunteer)} /> Accesso come volontario
+      </label>
+      <br />
+      <Button onClick={handleLogin} style={{ backgroundColor: '#2E8B57', color: 'white' }}>Login</Button>
     </div>
   );
 }
